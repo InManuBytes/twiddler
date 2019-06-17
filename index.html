@@ -12,24 +12,30 @@
         var $body = $('body');
 
         var allTweets = streams.home.slice();
-        //write a function that just generates all the tweets
+        //A function that just generates all the tweets
         var getAllTweets = function() {
           var currentIndex = allTweets.length - 1;
           allTweets = streams.home.slice(); //this will update our tweets
           while(currentIndex >= 0){
             var tweet = allTweets[currentIndex];
             var $tweet = $('<div></div>');
-            $tweet.text('@' + tweet.user + ': ' + tweet.message);
+            var completeTweetDate = tweet.created_at;
+            var timestamp = completeTweetDate.toLocaleTimeString(undefined,{
+              hour: '2-digit',
+              minute: '2-digit',
+              second: '2-digit'
+            })
+            $tweet.text('@' + tweet.user + ': ' + tweet.message + ' at ' + timestamp);
             $tweet.appendTo($body);
             currentIndex -= 1;
           }
         }
         $("#getNewTweets").click(function(){
-          $('div').remove();
+          $('div').remove(); //removes previous list of tweets so it can show the most updated
           getAllTweets();
         });
 
-        getAllTweets();
+        getAllTweets(); //generates original stream
 
       });
 
