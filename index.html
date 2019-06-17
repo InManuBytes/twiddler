@@ -5,20 +5,31 @@
     <script src="data_generator.js"></script>
   </head>
   <body>
+    <button type="button" id="getNewTweets">Latest Tweets</button>
     <script>
 
       $(document).ready(function(){
         var $body = $('body');
-        $body.html('');
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
+        var allTweets = streams.home.slice();
+        //write a function that just generates all the tweets
+        var getAllTweets = function() {
+          var currentIndex = allTweets.length - 1;
+          allTweets = streams.home.slice(); //this will update our tweets
+          while(currentIndex >= 0){
+            var tweet = allTweets[currentIndex];
+            var $tweet = $('<div></div>');
+            $tweet.text('@' + tweet.user + ': ' + tweet.message);
+            $tweet.appendTo($body);
+            currentIndex -= 1;
+          }
         }
+        $("#getNewTweets").click(function(){
+          $('div').remove();
+          getAllTweets();
+        });
+
+        getAllTweets();
 
       });
 
