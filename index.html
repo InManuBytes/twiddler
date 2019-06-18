@@ -3,11 +3,37 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet" type="text/css">
+    <style>
+      button {
+        border-radius: 8px;
+        color: white;
+        background-color: #0F5897;
+        padding: 5px 10px 8px 10px;
+        font-size: 16px;
+        width: 100%;
+      }
+      button:hover {
+        background-color: #4791d0;
+      }
+      .tweet {
+        border-radius: 10px;
+        border : 15px solid rgba(37, 97, 185, 0.5);
+        padding: 10px;
+        margin : 10px 0;
+        display: flex;
+        }
+      .time {
+        text-align: right;
+        margin: -40px;
+        padding: 0px 60px 60px 0px;
+      }
+
+    </style>
   </head>
   <body>
     <button type="button" id="getNewTweets">Latest Tweets</button>
     <script>
-
       $(document).ready(function(){
         var $body = $('body');
 
@@ -18,15 +44,17 @@
           allTweets = streams.home.slice(); //this will update our tweets
           while(currentIndex >= 0){
             var tweet = allTweets[currentIndex];
-            var $tweet = $('<div></div>');
+            var $tweet = $('<div class ="tweet"></div>');
             var completeTweetDate = tweet.created_at;
-            var timestamp = completeTweetDate.toLocaleTimeString(undefined,{
+            var $timestamp = $('<div class="time"></div>');
+            $timestamp.text(completeTweetDate.toLocaleTimeString(undefined,{
               hour: '2-digit',
               minute: '2-digit',
               second: '2-digit'
-            })
-            $tweet.text('@' + tweet.user + ': ' + tweet.message + ' at ' + timestamp);
+            }));
+            $tweet.text('@' + tweet.user + ': ' + tweet.message);
             $tweet.appendTo($body);
+            $timestamp.appendTo($body);
             currentIndex -= 1;
           }
         }
