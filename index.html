@@ -3,7 +3,7 @@
   <head>
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
-    <title>THIS IS THE TITLE</title>
+    <title>TWIDDLER</title>
     <link href="https://fonts.googleapis.com/css?family=Raleway:100,400,600,700&display=swap" rel="stylesheet">
     <style>
       body {
@@ -47,6 +47,9 @@
       button:hover {
         background-color: #4791d0;
       }
+      a {
+        text-decoration: none;
+      }
       .tweet {
         border-radius: 10px;
         border : 6px solid rgba(37, 97, 185, 0.5);
@@ -70,53 +73,63 @@
   <body>
     <div id="wrapper">
       <div id="title">Twiddler</div>
-      <button type="button" id="getNewTweets">Latest Tweets</button>
-      <div id="tweet_stream">
-        <script>
-            $(document).ready(function(){
+      <span id="tweets_wrapper">
+        <button type="button" id="getNewTweets">Latest Tweets</button>
+        <div id="tweet_stream">
+          <script>
+              $(document).ready(function(){
 
-              var $tweet_stream = $('#tweet_stream');
+                var $tweet_stream = $('#tweet_stream');
 
-              var allTweets = streams.home.slice();
-              //A function that just generates all the tweets
-              var getAllTweets = function() {
-                var currentIndex = allTweets.length - 1;
-                allTweets = streams.home.slice(); //this will update our tweets
-                while(currentIndex >= 0){
-                  var tweet = allTweets[currentIndex];
-                  var $tweet = $('<div class ="tweet"></div>');
-                  var $user = $('<p class = "username"></p>');
-                  var $tweet_message = $('<p class ="tweet_message"></p>')
-                  var completeTweetDate = tweet.created_at;
-                  var $timestamp = $('<p class="time"></p>');
-                  
-                  $timestamp.text(completeTweetDate.toLocaleTimeString(undefined,{
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                  }));
-                  $user.text('@'+ tweet.user +':')
-                  $tweet_message.text(tweet.message);
-                  
-                  $tweet.appendTo($tweet_stream);
-                    $user.appendTo($tweet);
-                    $tweet_message.appendTo($tweet);
-                    $timestamp.appendTo($tweet);
+                var allTweets = streams.home.slice();
+                //A function that just generates all the tweets
+                var getAllTweets = function() {
+                  var currentIndex = allTweets.length - 1;
+                  allTweets = streams.home.slice(); //this will update our tweets
+                  while(currentIndex >= 0){
+                    var tweet = allTweets[currentIndex];
+                    var completeTweetDate = tweet.created_at;
+
+                    var $tweet = $('<div class ="tweet"></div>');
+                    var $user = $('<a href="#" class = "username"></a>');
+                    var $tweet_message = $('<p class ="tweet_message"></p>')
+                    var $timestamp = $('<p class="time"></p>');
+                    
+                    $timestamp.text(completeTweetDate.toLocaleTimeString(undefined,{
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    }));
+                    $user.text('@'+ tweet.user +':')
+                    $tweet_message.text(tweet.message);
+                    
+                    $tweet.appendTo($tweet_stream);
+                      $user.appendTo($tweet);
+                      $tweet_message.appendTo($tweet);
+                      $timestamp.appendTo($tweet);
 
 
-                  currentIndex -= 1;
+                    currentIndex -= 1;
+                  }
                 }
-              }
-              $("#getNewTweets").click(function(){
-                $tweet_stream.children().remove(); //removes previous list of tweets so it can show the most updated
-                //the children are the individual tweets
-                getAllTweets();
-              });
+                $("#getNewTweets").click(function(){
+                  $tweet_stream.children().remove(); //removes previous list of tweets so it can show the most updated
+                  //the children are the individual tweets
+                  getAllTweets();
+                });          
 
-              getAllTweets(); //generates original stream
-            });
-        </script>
-      </div>
+                getAllTweets(); //generates original stream
+                
+
+                $('#tweet_stream').on('click', '.username', function(){
+                  var usernameHandle = $(this).text();
+                  var user = usernameHandle.substring(1,usernameHandle.length-1);
+                  $('#tweets_wrapper').children().remove();
+                });
+              });
+          </script>
+        </div>
+      </span>  
       <div id="footer"> You've reached the end of the Tweets </div>
     </div>
   </body>
