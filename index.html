@@ -18,10 +18,10 @@
         align-items: center;
       }
       #title { 
-        color: #333;
+        color: rgb(26, 61, 58);;
         margin:10px;
         padding:0;
-        font-size: 30px;
+        font-size: 40px;
       }
       #footer { 
         width: flex;
@@ -29,7 +29,7 @@
         margin: 0px 0px 10px 0px;
         padding: 10px;
         font-weight: 700;
-        color: gray;
+        color: rgb(51, 71, 70);;
       }
       #twitter_stream { 
         color: #333;
@@ -39,27 +39,27 @@
       button {
         border-radius: 8px;
         color: white;
-        background-color: #0F5897;
+        background-color: rgb(2, 54, 50);
         padding: 5px 10px 8px 10px;
         font-size: 16px;
         width: 100%;
       }
       button:hover {
-        background-color: #4791d0;
+        background-color: rgb(31, 226, 210);;
       }
       a {
         text-decoration: none;
       }
       .tweet {
         border-radius: 10px;
-        border : 6px solid rgba(37, 97, 185, 0.5);
+        border : 6px solid rgba(21, 185, 172, 0.5);
         padding: 0px 5px 0px 5px;
         margin : 10px 0;
         width: auto;
         }
       .username{
         font-weight: 600;
-        color:  rgb(17, 65, 107);
+        color:  rgb(9, 73, 68);
       }
       .tweet_message{
         padding: 0px 0px 0px 25px;
@@ -71,30 +71,33 @@
     </style>
   </head>
   <body>
-    <div id="wrapper">
+    <div id="wrapper"> 
       <div id="title">Twiddler</div>
       <span id="tweets_wrapper">
-        <button type="button" id="getNewTweets">Latest Tweets</button>
-        <div id="tweet_stream">
-          <script>
+          <button type="button" id="getNewTweets">
+            Show me the latest Tweets
+          </button>
+          <div id="tweet_stream">
+            <script>
+              var $tweet_stream = $('#tweet_stream'); //simpler way of referring to the tweet_stream
+              var newTweets = streams.home.slice(); //makes a copy of all the tweets
+              var filtered = false;
+              var filteredTweets = [];
+              var user;
+
               $(document).ready(function(){
-
-                var $tweet_stream = $('#tweet_stream');
-
-                var allTweets = streams.home.slice();
-                //A function that just generates all the tweets
-                var getAllTweets = function() {
-                  var currentIndex = allTweets.length - 1;
-                  allTweets = streams.home.slice(); //this will update our tweets
-                  while(currentIndex >= 0){
-                    var tweet = allTweets[currentIndex];
-                    var completeTweetDate = tweet.created_at;
-
+                //Takes in an array of tweets, which could either be all
+                //tweets or a filtered version and displays the tweets with jquery
+                var displayTweets = function(tweetsArray) {
+                  
+                  tweetsArray.forEach(function(tweet){
                     var $tweet = $('<div class ="tweet"></div>');
                     var $user = $('<a href="#" class = "username"></a>');
                     var $tweet_message = $('<p class ="tweet_message"></p>')
                     var $timestamp = $('<p class="time"></p>');
                     
+                    var completeTweetDate = tweet.created_at;
+
                     $timestamp.text(completeTweetDate.toLocaleTimeString(undefined,{
                       hour: '2-digit',
                       minute: '2-digit',
@@ -103,32 +106,68 @@
                     $user.text('@'+ tweet.user +':')
                     $tweet_message.text(tweet.message);
                     
-                    $tweet.appendTo($tweet_stream);
+                    $tweet.prependTo($tweet_stream);
                       $user.appendTo($tweet);
                       $tweet_message.appendTo($tweet);
                       $timestamp.appendTo($tweet);
-
-
-                    currentIndex -= 1;
-                  }
+                  })
+                    
                 }
-                $("#getNewTweets").click(function(){
-                  $tweet_stream.children().remove(); //removes previous list of tweets so it can show the most updated
-                  //the children are the individual tweets
-                  getAllTweets();
-                });          
-
-                getAllTweets(); //generates original stream
                 
+                //filters all the Tweets and pushes them into the filterTweets array
+                var filterTweets = function (target) {
+                  newTweets.forEach(function(tweet) {
+                    if (tweet.user === target) {
+                      filteredTweets.push(tweet);
+                    }
+                  });
+                  return filteredTweets;
+                }
+
+                //A function that just generates all the tweets an pushes them into 
+                //when you click the button that says "latest tweets"
+                $("#getNewTweets").click(function(){
+                  $tweet_stream.children().hide(); //hides from view previous list of tweets
+                  // so it can show the most updated
+                  //the children are the individual tweets
+                  if (filtered){
+                    filteredTweets = [];
+                    newTweets = streams.home.slice();
+                    var usernameHandle = $(this).text();
+                    var user = usernameHandle.substring(20);
+                    filterTweets(user);
+                    displayTweets(filteredTweets);
+                  } else if (!filtered) {
+                    newTweets = streams.home.slice(); //update tweets
+                    displayTweets(newTweets); //generates all tweets including updated ones
+                  }
+
+                });                          
 
                 $('#tweet_stream').on('click', '.username', function(){
                   var usernameHandle = $(this).text();
                   var user = usernameHandle.substring(1,usernameHandle.length-1);
-                  $('#tweets_wrapper').children().remove();
+                  $('#tweet_stream').children().remove();
+                  $("#getNewTweets").html('Get new tweets from ' + user);
+                  filterTweets(user);
+                  displayTweets(filteredTweets);
+                  filtered = true;
                 });
+
+                //write an action where if you click on the title it takes you back to the 
+                //home page, resets the user and its filtered array
+                $('#title').click(function(){
+                  filtered = false;
+                  filteredTweets = [];
+                  $("#getNewTweets").html('Show me the latest Tweets');
+                  displayTweets(newTweets);
+                });
+
+                displayTweets(newTweets); //generates original stream
+
               });
-          </script>
-        </div>
+            </script>
+          </div>
       </span>  
       <div id="footer"> You've reached the end of the Tweets </div>
     </div>
